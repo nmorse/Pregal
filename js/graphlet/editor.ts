@@ -21,7 +21,7 @@ class DemoButtonCmp {
   constructor(evt: EventService) {
     this.evt = evt;
   }
-  add_a_node()() {
+  add_a_node() {
     this.evt.doSomething(Math.random());
   }
 }
@@ -45,7 +45,7 @@ class ParentCmp {
 }
 
 @Component({
-    selector: 'hello'
+    selector: 'graphlet-editor'
 	template: `
 	  <parent-cmp></parent-cmp>
 	`,
