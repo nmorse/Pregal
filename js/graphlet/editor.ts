@@ -49,7 +49,7 @@ class ParentCmp {
 	template: `
 	  <parent-cmp></parent-cmp>
 	`,
-	directives : [ParentCmp, AnotherParentCmp]
+	directives : [ParentCmp]
 })
 // Graphlet (diagram) Editor has two modes of operation:
 //   1 is as an editor. In edit mode it mostly
