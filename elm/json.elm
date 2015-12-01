@@ -2,36 +2,27 @@ import Html exposing (text)
 import Json.Decode exposing (..)
 import Json.Encode 
 
-personJSONstring = "{\"name\": \"Erin\", \"age\":48}"
-
-theperson =
-    Json.Encode.object
-      [ ("name", Json.Encode.string "Tom")
-      , ("age", Json.Encode.int 42)
-      ]
 
 
-
-
-type alias Person = { name: String, age: Int }
+type alias Node = {id: String, name: String, node_type: Int }
 
 -- Design the decoders
 
-nameAndAge : Decoder (String,Int)
-nameAndAge =
-    object2 (,)
+nodeDec : Decoder (String,String,Int)
+nodeDec =
+    object3 (,,)
+      ("id" := string)
       ("name" := string)
-      ("age" := int)
+      ("node_type" := int)
 
 -- Example data
 
-testdata1 = "{\"name\":\"Jane\",\"age\":47}"
+testdata1 = "{\"id\":\"n1\",\"name\":\"Start\",\"node_type\":47}"
 
-newPerson = decodeString nameAndAge testdata1
+newNode = decodeString nodeDec testdata1
 
-
-compact = Json.Encode.encode 0 theperson
+--compact = Json.Encode.encode 0 newNode
 
 
 main =
-  text (toString newPerson)
+  text (toString newNode)
