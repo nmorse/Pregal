@@ -4,6 +4,7 @@ import Graphics.Element exposing (..)
 
 --type MyShape =
 type MyList a = Empty | Node a (MyList a)
+-- mkList converts MyList to a standard List
 mkList : MyList Form -> List Form
 mkList l =
     case l of
