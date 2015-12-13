@@ -41,5 +41,5 @@ type Action = Increment | Decrement
 
 update action model =
   case action of
-    Increment -> { model | tick = model.tick + 2 }
-    Decrement -> { model | tick = model.tick - 1 }
+    Increment -> { model | tick = model.tick + 1 }
+    Decrement -> if model > 0 { model | tick = model.tick - 1 } else { model }
