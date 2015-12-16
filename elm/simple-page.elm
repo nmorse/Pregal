@@ -15,21 +15,22 @@ main =
   StartApp.start { model = initModel, view = view, update = update }
 
 type alias Model =
-  { style : String
+  { style : List (String)
   , tick : Int
   }
 
 initModel = 
-    { tick = 0, style = "none" }
+    { tick = 0, style = (List.append (List.append [] ["red"]) ["blue"]) }
+
 
 view address model =
   div []
     [ button [ onClick address Decrement ] [ text "-" ]
-    , div [ style [("color", "red")] ] [ text (toString model.tick) ]
+    , div [ style [("color", (toString (List.head model.style)))] ] [ text (toString model.tick) ]
     , button [ onClick address Increment ] [ text "+" ]
     , div []
     [ button [ onClick address Decrement ] [ text "-" ]
-    , div [ style [("color", "blue")] ] [ text (toString model.tick) ]
+    , div [ style [("color", (toString (List.tail model.style)))] ] [ text (toString model.tick) ]
     , button [ onClick address Increment ] [ text "+" ]
     ]
     ]
