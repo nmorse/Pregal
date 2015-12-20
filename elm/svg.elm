@@ -1,20 +1,38 @@
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
-import Html exposing (Html)
+import Html exposing (div, button, text, br)
+import Html.Events exposing (onClick)
+import StartApp.Simple as StartApp
 
-
-main : Html
+main : Signal Html.Html
 main =
-  svg [ version "1.1", x "0", y "0", viewBox "0 0 323.141 322.95" ]
-    [ polygon [ fill "#F0AD00", points "161.649,152.782 231.514,82.916 91.783,82.916" ] []
-    , polygon [ fill "#7FD13B", points "8.867,0 79.241,70.375 232.213,70.375 161.838,0" ] []
-    , rect
-        [ fill "#7FD13B", x "192.99", y "107.392", width "107.676", height "108.167"
-        , transform "matrix(0.7071 0.7071 -0.7071 0.7071 186.4727 -127.2386)"
+  StartApp.start { model = model, view = view, update = update }
+
+model = {count = 0, color = "#AA2233", selected = False}
+
+view address model =
+  div []
+    [ button [ onClick address Decrement ] [ Html.text "-" ]
+    , div [] [ Html.text ((toString model.count) ++ (toString model.selected))]
+    , button [ onClick address Increment ] [ Html.text "+" ]
+    , br [] []
+    , svg [ width "800", height "600", viewBox "0 0 800 600" ]
+      [
+        g [] [
+          polygon [ fill model.color, points "100,100 300,100 250,200 150,200",
+          onClick address Select ] []
+          , Svg.text "testing now"
         ]
-        []
-    , polygon [ fill "#60B5CC", points "323.298,143.724 323.298,0 179.573,0" ] []
-    , polygon [ fill "#5A6378", points "152.781,161.649 0,8.868 0,314.432" ] []
-    , polygon [ fill "#F0AD00", points "255.522,246.655 323.298,314.432 323.298,178.879" ] []
-    , polygon [ fill "#60B5CC", points "161.649,170.517 8.869,323.298 314.43,323.298" ] []
+      ]
     ]
+
+type Action = Increment | Decrement | Color | Select | Move
+
+
+update action model =
+  case action of
+    Increment -> {model | count = model.count + 1}
+    Decrement -> {model | count = model.count - 1}
+    Color -> {model | color = "#33BB00"}
+    Select -> {model | selected = True, color = "#0033BB"}
+    Move -> {model | color = "#33BB00"}
