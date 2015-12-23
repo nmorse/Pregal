@@ -1,0 +1,152 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $DragAndDrop = Elm.DragAndDrop.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var _op = {};
+   var Track = function (a) {    return {ctor: "Track",_0: a};};
+   var Add = function (a) {    return {ctor: "Add",_0: a};};
+   var moveBy = F2(function (_p1,_p0) {
+      var _p2 = _p1;
+      var _p3 = _p0;
+      return {ctor: "_Tuple2"
+             ,_0: _p3._0 + $Basics.toFloat(_p2._0)
+             ,_1: _p3._1 - $Basics.toFloat(_p2._1)};
+   });
+   var putInBox = function (e) {
+      var _p4 = $Graphics$Element.sizeOf(e);
+      var sx = _p4._0;
+      var sy = _p4._1;
+      return $Graphics$Element.layers(_U.list([e
+                                              ,A3($Graphics$Collage.collage,
+                                              sx,
+                                              sy,
+                                              _U.list([A2($Graphics$Collage.outlined,
+                                              $Graphics$Collage.solid($Color.black),
+                                              A2($Graphics$Collage.rect,
+                                              $Basics.toFloat(sx) + 6,
+                                              $Basics.toFloat(sy) + 6))]))]));
+   };
+   var hover = $Signal.mailbox($Maybe.Nothing);
+   var makeBox = function (i) {
+      return A2($Graphics$Input.hoverable,
+      function (_p5) {
+         return A2($Signal.message,
+         hover.address,
+         function (h) {
+            return h ? $Maybe.Just(i) : $Maybe.Nothing;
+         }(_p5));
+      },
+      putInBox($Graphics$Element.leftAligned($Text.fromString($Basics.toString(i)))));
+   };
+   var add = $Signal.mailbox({ctor: "_Tuple0"});
+   var button = A2($Graphics$Input.button,
+   A2($Signal.message,add.address,{ctor: "_Tuple0"}),
+   "add a draggable box");
+   var main = function () {
+      var update = function (event) {
+         var _p6 = event;
+         _v2_4: do {
+            if (_p6.ctor === "Add") {
+                  var _p7 = _p6._0;
+                  return A2($Dict.insert,
+                  _p7,
+                  {ctor: "_Tuple2"
+                  ,_0: {ctor: "_Tuple2",_0: 0,_1: 0}
+                  ,_1: A2($Graphics$Element.color,$Color.yellow,makeBox(_p7))});
+               } else {
+                  if (_p6._0.ctor === "Just" && _p6._0._0.ctor === "_Tuple2") {
+                        switch (_p6._0._0._1.ctor)
+                        {case "Lift": return A2($Dict.update,
+                             _p6._0._0._0,
+                             $Maybe.map(function (_p8) {
+                                var _p9 = _p8;
+                                return {ctor: "_Tuple2"
+                                       ,_0: _p9._0
+                                       ,_1: A2($Graphics$Element.color,$Color.orange,_p9._1)};
+                             }));
+                           case "MoveBy": if (_p6._0._0._1._0.ctor === "_Tuple2") {
+                                   return A2($Dict.update,
+                                   _p6._0._0._0,
+                                   $Maybe.map(function (_p10) {
+                                      var _p11 = _p10;
+                                      return {ctor: "_Tuple2"
+                                             ,_0: A2(moveBy,
+                                             {ctor: "_Tuple2",_0: _p6._0._0._1._0._0,_1: _p6._0._0._1._0._1},
+                                             _p11._0)
+                                             ,_1: _p11._1};
+                                   }));
+                                } else {
+                                   break _v2_4;
+                                }
+                           default: return A2($Dict.update,
+                             _p6._0._0._0,
+                             $Maybe.map(function (_p12) {
+                                var _p13 = _p12;
+                                return {ctor: "_Tuple2"
+                                       ,_0: _p13._0
+                                       ,_1: A2($Graphics$Element.color,$Color.yellow,_p13._1)};
+                             }));}
+                     } else {
+                        break _v2_4;
+                     }
+               }
+         } while (false);
+         return $Basics.identity;
+      };
+      return A2($Signal.map,
+      function (dict) {
+         return A2($Graphics$Element.flow,
+         $Graphics$Element.down,
+         _U.list([button
+                 ,A3($Graphics$Collage.collage,
+                 200,
+                 200,
+                 A2($List.map,
+                 function (_p14) {
+                    var _p15 = _p14;
+                    return A2($Graphics$Collage.move,
+                    _p15._0,
+                    $Graphics$Collage.toForm(_p15._1));
+                 },
+                 $Dict.values(dict)))]));
+      },
+      A3($Signal.foldp,
+      update,
+      $Dict.empty,
+      A2($Signal.merge,
+      A2($Signal.map,
+      Add,
+      A3($Signal.foldp,
+      F2(function (_p16,t) {    return t + 1;}),
+      0,
+      add.signal)),
+      A2($Signal.map,
+      Track,
+      A2($DragAndDrop.trackMany,$Maybe.Nothing,hover.signal)))));
+   }();
+   return _elm.Main.values = {_op: _op
+                             ,add: add
+                             ,button: button
+                             ,hover: hover
+                             ,makeBox: makeBox
+                             ,putInBox: putInBox
+                             ,moveBy: moveBy
+                             ,Add: Add
+                             ,Track: Track
+                             ,main: main};
+};

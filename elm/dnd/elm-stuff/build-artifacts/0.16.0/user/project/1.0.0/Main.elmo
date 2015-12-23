@@ -1,0 +1,77 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $DragAndDrop = Elm.DragAndDrop.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Graphics$Input = Elm.Graphics.Input.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm);
+   var _op = {};
+   var moveBy = F2(function (_p1,_p0) {
+      var _p2 = _p1;
+      var _p3 = _p0;
+      return {ctor: "_Tuple2"
+             ,_0: _p3._0 + $Basics.toFloat(_p2._0)
+             ,_1: _p3._1 - $Basics.toFloat(_p2._1)};
+   });
+   var putInBox = function (e) {
+      var _p4 = $Graphics$Element.sizeOf(e);
+      var sx = _p4._0;
+      var sy = _p4._1;
+      return $Graphics$Element.layers(_U.list([e
+                                              ,A3($Graphics$Collage.collage,
+                                              sx,
+                                              sy,
+                                              _U.list([A2($Graphics$Collage.outlined,
+                                              $Graphics$Collage.solid($Color.black),
+                                              A2($Graphics$Collage.rect,
+                                              $Basics.toFloat(sx),
+                                              $Basics.toFloat(sy)))]))]));
+   };
+   var hover = $Signal.mailbox(false);
+   var box = A2($Graphics$Input.hoverable,
+   $Signal.message(hover.address),
+   putInBox($Graphics$Element.leftAligned($Text.fromString("drag-and-drop me"))));
+   var main = function () {
+      var update = function (m) {
+         var _p5 = m;
+         if (_p5.ctor === "Just" && _p5._0.ctor === "MoveBy" && _p5._0._0.ctor === "_Tuple2")
+         {
+               return moveBy({ctor: "_Tuple2"
+                             ,_0: _p5._0._0._0
+                             ,_1: _p5._0._0._1});
+            } else {
+               return $Basics.identity;
+            }
+      };
+      return A2($Signal.map,
+      function (p) {
+         return A3($Graphics$Collage.collage,
+         200,
+         200,
+         _U.list([A2($Graphics$Collage.move,
+         p,
+         $Graphics$Collage.toForm(box))]));
+      },
+      A3($Signal.foldp,
+      update,
+      {ctor: "_Tuple2",_0: 0,_1: 0},
+      A2($DragAndDrop.track,false,hover.signal)));
+   }();
+   return _elm.Main.values = {_op: _op
+                             ,hover: hover
+                             ,box: box
+                             ,putInBox: putInBox
+                             ,moveBy: moveBy
+                             ,main: main};
+};

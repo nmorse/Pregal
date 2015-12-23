@@ -1,0 +1,106 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Automaton = Elm.Automaton.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
+   $DragAndDrop = Elm.DragAndDrop.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Mouse = Elm.Mouse.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var _op = {};
+   var moveBy = F2(function (_p1,_p0) {
+      var _p2 = _p1;
+      var _p3 = _p0;
+      return {ctor: "_Tuple2"
+             ,_0: _p3._0 + $Basics.toFloat(_p2._0)
+             ,_1: _p3._1 - $Basics.toFloat(_p2._1)};
+   });
+   var main = function () {
+      var update = F2(function (event,_p4) {
+         var _p5 = _p4;
+         var _p7 = _p5._1;
+         var _p6 = A2($Automaton.step,
+         {ctor: "_Tuple2",_0: event,_1: _p7},
+         _p5._0);
+         if (_p6._1.ctor === "Just" && _p6._1._0.ctor === "_Tuple2" && _p6._1._0._1.ctor === "MoveBy" && _p6._1._0._1._0.ctor === "_Tuple2")
+         {
+               return {ctor: "_Tuple2"
+                      ,_0: _p6._0
+                      ,_1: A3($Dict.update,
+                      _p6._1._0._0,
+                      $Maybe.map(moveBy({ctor: "_Tuple2"
+                                        ,_0: _p6._1._0._1._0._0
+                                        ,_1: _p6._1._0._1._0._1})),
+                      _p7)};
+            } else {
+               return {ctor: "_Tuple2",_0: _p6._0,_1: _p7};
+            }
+      });
+      var theAutomaton = A2($Automaton._op[">>>"],
+      $Automaton.pure($Basics.uncurry(F2(function (x,y) {
+         return x(y);
+      }))),
+      $DragAndDrop.automaton($Maybe.Nothing));
+      var left = F2(function (e,_p8) {
+         return $DragAndDrop.Mouse(e);
+      });
+      var within = F2(function (_p9,ps) {
+         var _p10 = _p9;
+         var _p13 = _p10._1;
+         var _p12 = _p10._0;
+         var _p11 = ps;
+         if (_p11.ctor === "[]") {
+               return $Maybe.Nothing;
+            } else {
+               var dy = _p11._0._1._1 + ($Basics.toFloat(_p13) - 100);
+               var dx = _p11._0._1._0 - ($Basics.toFloat(_p12) - 100);
+               return _U.cmp(dx * dx + dy * dy,
+               18 * 18) < 1 ? $Maybe.Just(_p11._0._0) : A2(within,
+               {ctor: "_Tuple2",_0: _p12,_1: _p13},
+               _p11._1);
+            }
+      });
+      var right = F2(function (p,dict) {
+         return $DragAndDrop.Hover(A2(within,p,$Dict.toList(dict)));
+      });
+      return A2($Signal.map,
+      function (_p14) {
+         return A3($Graphics$Collage.collage,
+         200,
+         200,
+         A2($List.map,
+         function (p) {
+            return A2($Graphics$Collage.move,
+            p,
+            A2($Graphics$Collage.outlined,
+            $Graphics$Collage.solid($Color.black),
+            $Graphics$Collage.circle(15)));
+         },
+         $Dict.values(_p14)));
+      },
+      A2($Signal.map,
+      $Basics.snd,
+      A3($Signal.foldp,
+      update,
+      {ctor: "_Tuple2"
+      ,_0: theAutomaton
+      ,_1: $Dict.fromList(_U.list([{ctor: "_Tuple2"
+                                   ,_0: 1
+                                   ,_1: {ctor: "_Tuple2",_0: 0,_1: -35}}
+                                  ,{ctor: "_Tuple2",_0: 2,_1: {ctor: "_Tuple2",_0: 10,_1: 0}}
+                                  ,{ctor: "_Tuple2",_0: 3,_1: {ctor: "_Tuple2",_0: 0,_1: 35}}]))},
+      A2($Signal.merge,
+      A2($Signal.map,left,$DragAndDrop.mouseEvents),
+      A2($Signal.map,right,$Mouse.position)))));
+   }();
+   return _elm.Main.values = {_op: _op,moveBy: moveBy,main: main};
+};

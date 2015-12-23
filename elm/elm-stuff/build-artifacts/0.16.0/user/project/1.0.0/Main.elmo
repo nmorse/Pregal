@@ -1,0 +1,86 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Mouse = Elm.Mouse.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $StartApp$Simple = Elm.StartApp.Simple.make(_elm),
+   $Svg = Elm.Svg.make(_elm),
+   $Svg$Attributes = Elm.Svg.Attributes.make(_elm);
+   var _op = {};
+   var update = F2(function (action,model) {
+      var _p0 = action;
+      switch (_p0.ctor)
+      {case "Increment": return _U.update(model,
+           {count: model.count + 1});
+         case "Decrement": return _U.update(model,
+           {count: model.count - 1});
+         case "Color": return _U.update(model,{color: "#33BB00"});
+         case "Select": return _U.update(model,
+           {selected: true,color: "#0033BB"});
+         default: return _U.update(model,{pos_x: _p0._0._0});}
+   });
+   var Move = function (a) {    return {ctor: "Move",_0: a};};
+   var Select = {ctor: "Select"};
+   var Color = {ctor: "Color"};
+   var Decrement = {ctor: "Decrement"};
+   var Increment = {ctor: "Increment"};
+   var updates = A2($Signal.map,Move,$Mouse.position);
+   var view = F2(function (address,model) {
+      return A2($Html.div,
+      _U.list([]),
+      _U.list([A2($Html.button,
+              _U.list([A2($Html$Events.onClick,address,Decrement)]),
+              _U.list([$Html.text("-")]))
+              ,A2($Html.div,
+              _U.list([]),
+              _U.list([$Html.text(A2($Basics._op["++"],
+              $Basics.toString(model.count),
+              A2($Basics._op["++"],
+              $Basics.toString(model.selected),
+              $Basics.toString(model.pos_x))))]))
+              ,A2($Html.button,
+              _U.list([A2($Html$Events.onClick,address,Increment)]),
+              _U.list([$Html.text("+")]))
+              ,A2($Html.br,_U.list([]),_U.list([]))
+              ,A2($Svg.svg,
+              _U.list([$Svg$Attributes.width("800")
+                      ,$Svg$Attributes.height("600")
+                      ,$Svg$Attributes.viewBox("0 0 800 600")]),
+              _U.list([A2($Svg.g,
+              _U.list([]),
+              _U.list([A2($Svg.polygon,
+                      _U.list([$Svg$Attributes.fill(model.color)
+                              ,$Svg$Attributes.points("100,100 300,100 250,200 150,200")
+                              ,A2($Html$Events.onClick,address,Select)]),
+                      _U.list([]))
+                      ,$Svg.text("testing now")]))]))]));
+   });
+   var model = {count: 0
+               ,color: "#AA2233"
+               ,selected: false
+               ,pos_x: 0};
+   var main = $StartApp$Simple.start({model: model
+                                     ,view: view
+                                     ,update: update});
+   return _elm.Main.values = {_op: _op
+                             ,main: main
+                             ,model: model
+                             ,view: view
+                             ,updates: updates
+                             ,Increment: Increment
+                             ,Decrement: Decrement
+                             ,Color: Color
+                             ,Select: Select
+                             ,Move: Move
+                             ,update: update};
+};
