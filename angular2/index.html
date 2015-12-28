@@ -24,8 +24,8 @@
     <!-- 3. Bootstrap -->
     <script>
       System.import('angular2/platform/browser').then(function(ng){
-        System.import('src/todo_app').then(function(src) {
-          ng.bootstrap(src.TodoApp);
+        System.import('src/di_demo').then(function(src) {
+          ng.bootstrap(src.DiDemo);
         });
       });
     </script>
@@ -34,7 +34,7 @@
 
   <!-- 4. Display the application -->
   <body>
-    <todo class="container" style="display: block">Loading...</todo>
+    <di-demo class="container" style="display: block;">Loading...</di-demo>
   </body>
 
 </html>
