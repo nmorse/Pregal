@@ -21,5 +21,8 @@
     ],
     "files": [
         "hello_world.ts"
-    ]
+    ],
+    "atom": {
+        "rewriteTsconfig": true
+    }
 }
