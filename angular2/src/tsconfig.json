@@ -20,7 +20,13 @@
         "!node_modules/**"
     ],
     "files": [
-        "hello_world.ts"
+        "di_demo.ts",
+        "hello_world.ts",
+        "todo_app.ts",
+        "todo_form.ts",
+        "todo_list.ts",
+        "todo.ts",
+        "ui_tabs.ts"
     ],
     "atom": {
         "rewriteTsconfig": true

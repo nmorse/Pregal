@@ -34,6 +34,7 @@ export class UiPane {
           (click)="select(pane)"
           role="presentation" [class.active]="pane.active">
         <a href="javascript: false">{{pane.title}}</a>
+        <button class="btn" (click)="removeDetail(pane)">Remove</button>
       </li>
     </ul>
     <ng-content></ng-content>
@@ -44,6 +45,10 @@ export class UiTabs {
 
   select(pane: UiPane) {
     this.panes.toArray().forEach((p: UiPane) => p.active = p == pane);
+  }
+  
+  removeDetail(pane: UiPane) {
+    this.parent.removeDetail(pane);
   }
 }
 
