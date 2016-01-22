@@ -96,7 +96,7 @@ Elm.Main.make = function (_elm) {
       ,_1: $Dict.fromList(_U.list([{ctor: "_Tuple2"
                                    ,_0: 1
                                    ,_1: {ctor: "_Tuple2",_0: 0,_1: -35}}
-                                  ,{ctor: "_Tuple2",_0: 2,_1: {ctor: "_Tuple2",_0: 10,_1: 0}}
+                                  ,{ctor: "_Tuple2",_0: 2,_1: {ctor: "_Tuple2",_0: 20,_1: 0}}
                                   ,{ctor: "_Tuple2",_0: 3,_1: {ctor: "_Tuple2",_0: 0,_1: 35}}]))},
       A2($Signal.merge,
       A2($Signal.map,left,$DragAndDrop.mouseEvents),
