@@ -30,7 +30,7 @@ main =
   let update event =
         case event of
           Add i                            -> Dict.insert i ((0,0), color yellow (makeBox i))
-          Track (Just (i, Lift))           -> Dict.update i (Maybe.map (\(p,b) -> (p, color orange b)))
+          Track (Just (i, Lift))           -> Dict.update i (Maybe.map (\(p,b) -> (p, color blue b)))
           Track (Just (i, MoveBy (dx,dy))) -> Dict.update i (Maybe.map (\(p,b) -> (moveBy (dx,dy) p, b)))
           Track (Just (i, Release))        -> Dict.update i (Maybe.map (\(p,b) -> (p, color yellow b)))
           _                                -> identity

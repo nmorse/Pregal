@@ -1,0 +1,1 @@
+ elm make dnd.elm --output=index.html
