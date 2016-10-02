@@ -24,5 +24,5 @@ main =
           (automaton', Just (i, MoveBy (dx,dy))) -> (automaton', Dict.update i (Maybe.map (moveBy (dx,dy))) dict)
           (automaton', _)                        -> (automaton', dict)
   in Signal.map (collage 200 200 << List.map (\p -> Graphics.Collage.move p (outlined (solid black) (circle 15))) << Dict.values)
-                (Signal.map snd (foldp update (theAutomaton, Dict.fromList [(1,(0,-35)), (2,(20,0)), (3,(0,35))])
+                (Signal.map snd (foldp update (theAutomaton, Dict.fromList [(1,(0,-35)), (2,(20,0)), (3,(0,35)), (4,(20,10))])
                                               (merge (Signal.map left DragAndDrop.mouseEvents) (Signal.map right Mouse.position))))
