@@ -61,10 +61,12 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every Time.second Tick
+  Time.every (Time.second * 0.1) Tick
 
 
 -- VIEW
+trans =
+  Math.Matrix4.makeTranslate3 150.0 0.0 0.0
 
 view : Model -> Html Msg
 view model =
@@ -72,7 +74,7 @@ view model =
     --angle =
     --  turns (Time.inSeconds model.t)
     rot_trans =
-      Math.Matrix4.rotate ((Time.inSeconds (model.t - model.st))*1) (Math.Vector3.vec3 30.0 60.0 20.0) Math.Matrix4.identity
+      Math.Matrix4.rotate ((Time.inSeconds (model.t - model.st))*0.6) (Math.Vector3.vec3 0.0 1.0 0.0) trans
   in
     svg [ viewBox "0 0 500 300", width "500px" ]
       (

@@ -10141,12 +10141,13 @@ var _user$project$Main$viewEdge = F3(
 			_elm_lang$core$Native_List.fromArray(
 				[]));
 	});
+var _user$project$Main$trans = A3(_elm_community$elm_linear_algebra$Math_Matrix4$makeTranslate3, 150.0, 0.0, 0.0);
 var _user$project$Main$view = function (model) {
 	var rot_trans = A3(
 		_elm_community$elm_linear_algebra$Math_Matrix4$rotate,
-		_elm_lang$core$Time$inSeconds(model.t - model.st) * 1,
-		A3(_elm_community$elm_linear_algebra$Math_Vector3$vec3, 30.0, 60.0, 20.0),
-		_elm_community$elm_linear_algebra$Math_Matrix4$identity);
+		_elm_lang$core$Time$inSeconds(model.t - model.st) * 0.6,
+		A3(_elm_community$elm_linear_algebra$Math_Vector3$vec3, 0.0, 1.0, 0.0),
+		_user$project$Main$trans);
 	return A2(
 		_elm_lang$svg$Svg$svg,
 		_elm_lang$core$Native_List.fromArray(
@@ -10239,7 +10240,7 @@ var _user$project$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
 };
 var _user$project$Main$subscriptions = function (model) {
-	return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second, _user$project$Main$Tick);
+	return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 0.1, _user$project$Main$Tick);
 };
 var _user$project$Main$main = {
 	main: _elm_lang$html$Html_App$program(
