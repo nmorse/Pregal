@@ -8,6 +8,12 @@ import Math.Matrix4 exposing (..)
 import Math.Vector3 exposing (..)
 import Html.Events exposing (onClick)
 
+-- for drag axis view
+import Html.Attributes exposing (..)
+import Html.Events exposing (on)
+import Json.Decode as Decode
+import Mouse exposing (Position)
+--
 
 main =
     Html.program
@@ -37,9 +43,13 @@ type alias Node =
 type alias Edge =
     { from : Int, to : Int, name : String }
 
+type alias Drag =
+    { start : Position
+    , current : Position
+    }
 
 type alias Model =
-    { animate_on: Bool, animate_start: Bool, ct : Time, st : Time, n : List Node, e : List Edge, rot : Float }
+    { drag : Maybe Drag, animate_on: Bool, animate_start: Bool, ct : Time, st : Time, n : List Node, e : List Edge, rot : Float, rot_drag : Float }
 
 
 init : ( Model, Cmd Msg )
@@ -58,9 +68,10 @@ init =
       , ct = 0
       , st = 0
       , rot = 0
+      , rot_drag = 0
       , animate_on = False
       , animate_start = False
-
+      , drag = Nothing
       }
     , Cmd.none
     )
@@ -71,6 +82,10 @@ init =
 type Msg
     = Tick Time
     | StopAndGo
+    | DragStart Position
+    | DragAt Position
+    | DragEnd Position
+
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -78,7 +93,8 @@ update msg model =
     case msg of
         Tick newTime ->
             if model.animate_start then
-              ( { model | rot = model.rot + Time.inSeconds (model.ct - model.st), st = newTime, ct = newTime, animate_start = False }, Cmd.none )
+              ( { model | rot = model.rot + Time.inSeconds (model.ct - model.st),
+                          st = newTime, ct = newTime, animate_start = False }, Cmd.none )
             else
               ( { model | ct = newTime }, Cmd.none )
 
@@ -88,6 +104,15 @@ update msg model =
             else
               ( { model | animate_on = True, animate_start = True }, Cmd.none )
 
+        DragStart xy ->
+            ( { model | drag = (Just (Drag xy xy))}, Cmd.none )
+
+        DragAt xy ->
+            ( { model | rot_drag = (getPosition model), drag = (Maybe.map (\{start} -> Drag start xy) model.drag)}, Cmd.none )
+
+        DragEnd _ ->
+            ( { model | drag = Nothing}, Cmd.none )
+
 
 -- SUBSCRIPTIONS
 
@@ -96,7 +121,13 @@ subscriptions model =
   if model.animate_on then
     Time.every (Time.second * 0.1) Tick
   else
-    Sub.none
+    case model.drag of
+      Nothing ->
+        Sub.none
+
+      Just _ ->
+        Sub.batch [ Mouse.moves DragAt, Mouse.ups DragEnd ]
+
 
 
 -- VIEW
@@ -112,16 +143,17 @@ view model =
         --  turns (Time.inSeconds model.t)
         rot_trans =
             Math.Matrix4.rotate
-            ((Time.inSeconds (model.ct - model.st) + model.rot) * 0.6)
+            ((Time.inSeconds (model.ct - model.st) + model.rot + model.rot_drag) * 0.6)
             (Math.Vector3.vec3 0.0 1.0 0.2) trans
     in
-      div [] [
+      div [Html.Attributes.style [("width", "100%"), ("height", "100%")]] [
         button [onClick StopAndGo] [Html.text "toggle"],
-        svg [ viewBox "0 0 500 300", width "500px" ]
+        svg [ viewBox "0 0 500 300", Svg.Attributes.width "500px" ]
             (List.append
                 (List.map (viewEdge model.n rot_trans) model.e)
                 (List.map (viewNode rot_trans) model.n)
-            )
+            ),
+        div [onMouseDown, Html.Attributes.style [("width", "100%"), ("height", "30px"), ("background-color", "#CCCCEE")]] []
       ]
 
 viewEdge all_nodes t edge =
@@ -186,3 +218,17 @@ viewNode t n =
 
 toVec3 pos =
     Math.Vector3.vec3 (toFloat pos.x) (toFloat pos.y) (toFloat pos.z)
+
+getPosition: Model -> Float
+getPosition m =
+  case m.drag of
+    Nothing ->
+      0.0
+
+    Just {start,current} ->
+      (toFloat (current.x - start.x) * 0.01)
+
+
+onMouseDown : Html.Attribute Msg
+onMouseDown =
+  on "mousedown" (Decode.map DragStart Mouse.position)
