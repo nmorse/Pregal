@@ -10008,6 +10008,120 @@ var _elm_lang$html$Html$details = _elm_lang$html$Html$node('details');
 var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
+var _elm_lang$html$Html_Events$keyCode = A2(_elm_lang$core$Json_Decode$field, 'keyCode', _elm_lang$core$Json_Decode$int);
+var _elm_lang$html$Html_Events$targetChecked = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'checked',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$bool);
+var _elm_lang$html$Html_Events$targetValue = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'value',
+			_1: {ctor: '[]'}
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _elm_lang$html$Html_Events$defaultOptions = _elm_lang$virtual_dom$VirtualDom$defaultOptions;
+var _elm_lang$html$Html_Events$onWithOptions = _elm_lang$virtual_dom$VirtualDom$onWithOptions;
+var _elm_lang$html$Html_Events$on = _elm_lang$virtual_dom$VirtualDom$on;
+var _elm_lang$html$Html_Events$onFocus = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onBlur = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onSubmitOptions = _elm_lang$core$Native_Utils.update(
+	_elm_lang$html$Html_Events$defaultOptions,
+	{preventDefault: true});
+var _elm_lang$html$Html_Events$onSubmit = function (msg) {
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'submit',
+		_elm_lang$html$Html_Events$onSubmitOptions,
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onCheck = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetChecked));
+};
+var _elm_lang$html$Html_Events$onInput = function (tagger) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, tagger, _elm_lang$html$Html_Events$targetValue));
+};
+var _elm_lang$html$Html_Events$onMouseOut = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseout',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseOver = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseover',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseLeave = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseleave',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseEnter = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseenter',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseUp = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mouseup',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onMouseDown = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'mousedown',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onDoubleClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'dblclick',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$onClick = function (msg) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'click',
+		_elm_lang$core$Json_Decode$succeed(msg));
+};
+var _elm_lang$html$Html_Events$Options = F2(
+	function (a, b) {
+		return {stopPropagation: a, preventDefault: b};
+	});
 var _elm_lang$svg$Svg$map = _elm_lang$virtual_dom$VirtualDom$map;
 var _elm_lang$svg$Svg$text = _elm_lang$virtual_dom$VirtualDom$text;
 var _elm_lang$svg$Svg$svgNamespace = A2(
@@ -10352,43 +10466,72 @@ var _user$project$Main$toVec3 = function (pos) {
 		_elm_community$linear_algebra$Math_Vector3$vec3,
 		_elm_lang$core$Basics$toFloat(pos.x),
 		_elm_lang$core$Basics$toFloat(pos.y),
-		0.0);
+		_elm_lang$core$Basics$toFloat(pos.z));
 };
 var _user$project$Main$viewNode = F2(
 	function (t, n) {
 		var radius = _elm_lang$core$Basics$toString(n.view.r);
-		var ypos = _elm_lang$core$Basics$toString(
-			_elm_community$linear_algebra$Math_Vector3$getY(
-				A2(
-					_elm_community$linear_algebra$Math_Matrix4$transform,
-					t,
-					_user$project$Main$toVec3(n.view.pos))));
-		var xpos = _elm_lang$core$Basics$toString(
-			_elm_community$linear_algebra$Math_Vector3$getX(
-				A2(
-					_elm_community$linear_algebra$Math_Matrix4$transform,
-					t,
-					_user$project$Main$toVec3(n.view.pos))));
+		var ypos = _elm_community$linear_algebra$Math_Vector3$getY(
+			A2(
+				_elm_community$linear_algebra$Math_Matrix4$transform,
+				t,
+				_user$project$Main$toVec3(n.view.pos)));
+		var xpos = _elm_community$linear_algebra$Math_Vector3$getX(
+			A2(
+				_elm_community$linear_algebra$Math_Matrix4$transform,
+				t,
+				_user$project$Main$toVec3(n.view.pos)));
 		return A2(
-			_elm_lang$svg$Svg$circle,
+			_elm_lang$svg$Svg$g,
+			{ctor: '[]'},
 			{
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$cx(xpos),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$cy(ypos),
-					_1: {
+				_0: A2(
+					_elm_lang$svg$Svg$circle,
+					{
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$r(radius),
+						_0: _elm_lang$svg$Svg_Attributes$cx(
+							_elm_lang$core$Basics$toString(xpos)),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$fill('#dd0000'),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$svg$Svg_Attributes$cy(
+								_elm_lang$core$Basics$toString(ypos)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$r(radius),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$fill('#dd0000'),
+									_1: {ctor: '[]'}
+								}
+							}
 						}
-					}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$svg$Svg$text_,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$x(
+								_elm_lang$core$Basics$toString(
+									(xpos - _elm_lang$core$Basics$toFloat(n.view.r)) + 2.0)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$y(
+									_elm_lang$core$Basics$toString(ypos)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg$text(n.name),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
 				}
-			},
-			{ctor: '[]'});
+			});
 	});
 var _user$project$Main$viewEdge = F3(
 	function (all_nodes, t, edge) {
@@ -10466,51 +10609,44 @@ var _user$project$Main$viewEdge = F3(
 			{ctor: '[]'});
 	});
 var _user$project$Main$trans = A3(_elm_community$linear_algebra$Math_Matrix4$makeTranslate3, 150.0, 150.0, 0.0);
-var _user$project$Main$view = function (model) {
-	var rot_trans = A3(
-		_elm_community$linear_algebra$Math_Matrix4$rotate,
-		_elm_lang$core$Time$inSeconds(model.t - model.st) * 0.6,
-		A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 1.0, 0.3),
-		_user$project$Main$trans);
-	return A2(
-		_elm_lang$svg$Svg$svg,
-		{
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 500 300'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$width('500px'),
-				_1: {ctor: '[]'}
-			}
-		},
-		A2(
-			_elm_lang$core$List$append,
-			A2(
-				_elm_lang$core$List$map,
-				A2(_user$project$Main$viewEdge, model.n, rot_trans),
-				model.e),
-			A2(
-				_elm_lang$core$List$map,
-				_user$project$Main$viewNode(rot_trans),
-				model.n)));
-};
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
-		var _p3 = _p2._0;
-		return _elm_lang$core$Native_Utils.eq(model.st, 0) ? {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{st: _p3}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		} : {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{t: _p3}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
+		if (_p2.ctor === 'Tick') {
+			var _p3 = _p2._0;
+			return model.animate_start ? {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						rot: model.rot + _elm_lang$core$Time$inSeconds(model.ct - model.st),
+						st: _p3,
+						ct: _p3,
+						animate_start: false
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			} : {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{ct: _p3}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			return model.animate_on ? {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{animate_on: false}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			} : {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{animate_on: true, animate_start: true}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
 	});
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
@@ -10519,39 +10655,75 @@ var _user$project$Main$init = {
 			ctor: '::',
 			_0: {
 				id: 1,
-				name: 'a',
+				name: 'a is 1',
 				view: {
-					r: 15,
-					pos: {x: -50, y: 100}
+					r: 25,
+					pos: {x: -50, y: 100, z: 0}
 				}
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					id: 2,
-					name: 'b',
+					name: 'b is 2',
 					view: {
-						r: 10,
-						pos: {x: 50, y: -100}
+						r: 20,
+						pos: {x: 50, y: -100, z: -50}
 					}
 				},
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: {
+						id: 3,
+						name: 'c is 3',
+						view: {
+							r: 15,
+							pos: {x: 50, y: 100, z: 0}
+						}
+					},
+					_1: {
+						ctor: '::',
+						_0: {
+							id: 4,
+							name: 'd',
+							view: {
+								r: 10,
+								pos: {x: -50, y: -100, z: 100}
+							}
+						},
+						_1: {ctor: '[]'}
+					}
+				}
 			}
 		},
 		e: {
 			ctor: '::',
 			_0: {from: 1, to: 2, name: 'connect'},
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: {from: 1, to: 3, name: 'click'},
+				_1: {
+					ctor: '::',
+					_0: {from: 2, to: 3, name: 'clack'},
+					_1: {
+						ctor: '::',
+						_0: {from: 1, to: 4, name: 'cluck'},
+						_1: {ctor: '[]'}
+					}
+				}
+			}
 		},
-		t: 0,
+		ct: 0,
 		st: 0,
-		rot: 0
+		rot: 0,
+		animate_on: false,
+		animate_start: false
 	},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
-var _user$project$Main$Point = F2(
-	function (a, b) {
-		return {x: a, y: b};
+var _user$project$Main$Point = F3(
+	function (a, b, c) {
+		return {x: a, y: b, z: c};
 	});
 var _user$project$Main$NodeView = F2(
 	function (a, b) {
@@ -10565,15 +10737,66 @@ var _user$project$Main$Edge = F3(
 	function (a, b, c) {
 		return {from: a, to: b, name: c};
 	});
-var _user$project$Main$Model = F5(
-	function (a, b, c, d, e) {
-		return {t: a, st: b, n: c, e: d, rot: e};
+var _user$project$Main$Model = F7(
+	function (a, b, c, d, e, f, g) {
+		return {animate_on: a, animate_start: b, ct: c, st: d, n: e, e: f, rot: g};
 	});
+var _user$project$Main$StopAndGo = {ctor: 'StopAndGo'};
+var _user$project$Main$view = function (model) {
+	var rot_trans = A3(
+		_elm_community$linear_algebra$Math_Matrix4$rotate,
+		(_elm_lang$core$Time$inSeconds(model.ct - model.st) + model.rot) * 0.6,
+		A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 1.0, 0.2),
+		_user$project$Main$trans);
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$StopAndGo),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('toggle'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$svg,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 500 300'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$width('500px'),
+							_1: {ctor: '[]'}
+						}
+					},
+					A2(
+						_elm_lang$core$List$append,
+						A2(
+							_elm_lang$core$List$map,
+							A2(_user$project$Main$viewEdge, model.n, rot_trans),
+							model.e),
+						A2(
+							_elm_lang$core$List$map,
+							_user$project$Main$viewNode(rot_trans),
+							model.n))),
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
 };
 var _user$project$Main$subscriptions = function (model) {
-	return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 0.1, _user$project$Main$Tick);
+	return model.animate_on ? A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 0.1, _user$project$Main$Tick) : _elm_lang$core$Platform_Sub$none;
 };
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{init: _user$project$Main$init, view: _user$project$Main$view, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions})();

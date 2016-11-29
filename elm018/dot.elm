@@ -8,6 +8,7 @@ import Math.Matrix4 exposing (..)
 import Math.Vector3 exposing (..)
 import Html.Events exposing (onClick)
 
+
 main =
     Html.program
         { init = init
@@ -22,7 +23,7 @@ main =
 
 
 type alias Point =
-    { x : Int, y : Int }
+    { x : Int, y : Int, z : Int }
 
 
 type alias NodeView =
@@ -38,32 +39,34 @@ type alias Edge =
 
 
 type alias Model =
-    { animate_on: Bool, t : Time, st : Time, n : List Node, e : List Edge, rot : Float }
+    { animate_on: Bool, animate_start: Bool, ct : Time, st : Time, n : List Node, e : List Edge, rot : Float }
 
 
 init : ( Model, Cmd Msg )
 init =
     ( { n =
-            [ { id = 1, name = "a is 1", view = { r = 35, pos = { x = -50, y = 100 } } }
-            , { id = 2, name = "b is 2", view = { r = 40, pos = { x = 50, y = -100 } } }
-            , { id = 3, name = "c is 3", view = { r = 45, pos = { x = 60, y = 90 } } }
+            [ { id = 1, name = "a is 1", view = { r = 25, pos = { x = -50, y = 100, z = 0 } } }
+            , { id = 2, name = "b is 2", view = { r = 20, pos = { x = 50, y = -100, z = -50 } } }
+            , { id = 3, name = "c is 3", view = { r = 15, pos = { x = 50, y = 100, z = 0 } } }
+            , { id = 4, name = "d", view = { r = 10, pos = { x = -50, y = -100, z = 100 } } }
             ]
       , e = [ { from = 1, to = 2, name = "connect" }
             , { from = 1, to = 3, name = "click" }
-            , { from = 2, to = 3, name = "clunk" }
+            , { from = 2, to = 3, name = "clack" }
+            , { from = 1, to = 4, name = "cluck" }
             ]
-      , t = 0
+      , ct = 0
       , st = 0
       , rot = 0
       , animate_on = False
+      , animate_start = False
+
       }
     , Cmd.none
     )
 
 
-
 -- UPDATE
-
 
 type Msg
     = Tick Time
@@ -74,18 +77,16 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick newTime ->
-            if model.st == 0 then
-              ( { model | st = newTime }, Cmd.none )
-            else if model.st /= -1 then
-              ( { model | t = newTime }, Cmd.none )
+            if model.animate_start then
+              ( { model | rot = model.rot + Time.inSeconds (model.ct - model.st), st = newTime, ct = newTime, animate_start = False }, Cmd.none )
             else
-              ( model, Cmd.none )
+              ( { model | ct = newTime }, Cmd.none )
 
         StopAndGo ->
             if model.animate_on then
               ( { model | animate_on = False }, Cmd.none )
             else
-              ( { model | animate_on = True, st = 0 }, Cmd.none )
+              ( { model | animate_on = True, animate_start = True }, Cmd.none )
 
 
 -- SUBSCRIPTIONS
@@ -110,7 +111,9 @@ view model =
         --angle =
         --  turns (Time.inSeconds model.t)
         rot_trans =
-            Math.Matrix4.rotate ((Time.inSeconds (model.t - model.st)) * 0.6) (Math.Vector3.vec3 0.0 1.0 0.3) trans
+            Math.Matrix4.rotate
+            ((Time.inSeconds (model.ct - model.st) + model.rot) * 0.6)
+            (Math.Vector3.vec3 0.0 1.0 0.2) trans
     in
       div [] [
         button [onClick StopAndGo] [Html.text "toggle"],
@@ -182,4 +185,4 @@ viewNode t n =
 
 
 toVec3 pos =
-    Math.Vector3.vec3 (toFloat pos.x) (toFloat pos.y) 0.0
+    Math.Vector3.vec3 (toFloat pos.x) (toFloat pos.y) (toFloat pos.z)
