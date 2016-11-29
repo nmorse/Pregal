@@ -111,7 +111,7 @@ update msg model =
             ( { model | rot_drag = (getPosition model), drag = (Maybe.map (\{start} -> Drag start xy) model.drag)}, Cmd.none )
 
         DragEnd _ ->
-            ( { model | drag = Nothing}, Cmd.none )
+            ( { model | rot = model.rot + model.rot_drag, rot_drag = 0, drag = Nothing}, Cmd.none )
 
 
 -- SUBSCRIPTIONS
