@@ -105,7 +105,7 @@ update msg model =
               ( { model | animate_on = True, animate_start = True }, Cmd.none )
 
         DragStart xy ->
-            ( { model | drag = (Just (Drag xy xy))}, Cmd.none )
+            ( { model | drag = if model.animate_on then Nothing else (Just (Drag xy xy))}, Cmd.none )
 
         DragAt xy ->
             ( { model | rot_drag = (getPosition model), drag = (Maybe.map (\{start} -> Drag start xy) model.drag)}, Cmd.none )
