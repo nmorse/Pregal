@@ -23,47 +23,58 @@ main =
         , subscriptions = subscriptions
         }
 
-
-
 -- MODEL
 
-
 type alias Point =
-    { x : Int, y : Int, z : Int }
+  { x : Int, y : Int, z : Int }
 
+--type alias Vec3 =
+--  { x : Float, y : Float, z : Float }
 
 type alias NodeView =
-    { pos : Point, r : Int }
+  { pos : Point, r : Int }
 
+type alias EdgeView =
+  { ports : List EdgePort }
+
+type alias EdgePort =
+  { incident : Vec3, transmitted : Vec3, pos: Point }
 
 type alias Node =
-    { id : Int, name : String, view : NodeView }
-
+  { id : Int, name : String, view : NodeView }
 
 type alias Edge =
-    { from : Int, to : Int, name : String }
+  { from : Int, to : Int, name : String, view : EdgeView }
 
 type alias Drag =
-    { start : Position
-    , current : Position
-    }
+  { start : Position
+  , current : Position
+  }
 
 type alias Model =
-    { drag : Maybe Drag, animate_on: Bool, animate_start: Bool, ct : Time, st : Time, n : List Node, e : List Edge, rot : Float, rot_drag : Float }
-
+  { drag : Maybe Drag
+  , animate_on: Bool
+  , animate_start: Bool
+  , ct : Time, st : Time
+  , n : List Node
+  , ed : List Edge
+  , rot : Float
+  , rot_drag : Float
+  }
 
 init : ( Model, Cmd Msg )
 init =
-    ( { n =
+    ( {
+      n =
             [ { id = 1, name = "a is 1", view = { r = 25, pos = { x = -50, y = 100, z = 0 } } }
             , { id = 2, name = "b is 2", view = { r = 20, pos = { x = 50, y = -100, z = -50 } } }
             , { id = 3, name = "c is 3", view = { r = 15, pos = { x = 50, y = 100, z = 0 } } }
             , { id = 4, name = "d", view = { r = 10, pos = { x = -50, y = -100, z = 100 } } }
             ]
-      , e = [ { from = 1, to = 2, name = "connect" }
-            , { from = 1, to = 3, name = "click" }
-            , { from = 2, to = 3, name = "clack" }
-            , { from = 1, to = 4, name = "cluck" }
+      , ed = [ { from = 1, to = 2, name = "connect", view = {ports=[{ incident=(Math.Vector3.vec3 25.0 0.0 0.0), transmitted=(Math.Vector3.vec3 0.0 0.0 0.0), pos={ x = 0, y = 0, z = 0 } }]} }
+            , { from = 1, to = 3, name = "click", view = {ports=[{incident=(Math.Vector3.vec3 15.0 20.0 0.0), transmitted=(Math.Vector3.vec3 0.0 0.0 0.0), pos={ x = 0, y = 0, z = 0 } }]} }
+            , { from = 2, to = 3, name = "clack", view = {ports=[{incident=(Math.Vector3.vec3 15.0 12.0 0.0), transmitted=(Math.Vector3.vec3 0.0 0.0 0.0), pos={ x = 0, y = 0, z = 0 } }]} }
+            , { from = 1, to = 4, name = "cluck", view = {ports=[{incident=(Math.Vector3.vec3 20.0 15.0 0.0), transmitted=(Math.Vector3.vec3 0.0 0.0 0.0), pos={ x = 0, y = 0, z = 0 } }]} }
             ]
       , ct = 0
       , st = 0
@@ -150,7 +161,7 @@ view model =
         button [onClick StopAndGo] [Html.text "toggle"],
         svg [ viewBox "0 0 500 300", Svg.Attributes.width "500px" ]
             (List.append
-                (List.map (viewEdge model.n rot_trans) model.e)
+                (List.map (viewEdge model.n rot_trans) model.ed)
                 (List.map (viewNode rot_trans) model.n)
             ),
         div [onMouseDown, Html.Attributes.style [("width", "100%"), ("height", "30px"), ("background-color", "#CCCCEE")]] []
@@ -166,11 +177,37 @@ viewEdge all_nodes t edge =
         to_n =
             List.head (List.filter (\n -> n.id == edge.to) all_nodes)
 
+        get_incident_x : Maybe Node -> Int
+        get_incident_x n =
+            case n of
+                Just { id, name, view } ->
+                    round (getX (Math.Matrix4.transform t
+                      (Math.Vector3.add
+                        (toVec3 (Just view.pos))
+                        (incidentOf (List.head edge.view.ports)) )))
+
+                _ ->
+                    20
+
         get_x : Maybe Node -> Int
         get_x n =
             case n of
                 Just { id, name, view } ->
-                    round (getX (Math.Matrix4.transform t (toVec3 view.pos)))
+                    round (getX (Math.Matrix4.transform t
+                      (toVec3 (Just view.pos))
+                        ))
+
+                _ ->
+                    20
+
+        get_incident_y : Maybe Node -> Int
+        get_incident_y n =
+            case n of
+                Just { id, name, view } ->
+                    round (getY (Math.Matrix4.transform t
+                      (Math.Vector3.add
+                        (toVec3 (Just view.pos))
+                        (incidentOf (List.head edge.view.ports)) )))
 
                 _ ->
                     20
@@ -179,16 +216,18 @@ viewEdge all_nodes t edge =
         get_y n =
             case n of
                 Just { id, name, view } ->
-                    round (getY (Math.Matrix4.transform t (toVec3 view.pos)))
+                    round (getY (Math.Matrix4.transform t
+                        (toVec3 (Just view.pos))
+                        ))
 
                 _ ->
                     20
 
         mx1 =
-            toString (get_x from_n)
+            toString (get_incident_x from_n)
 
         my1 =
-            toString (get_y from_n)
+            toString (get_incident_y from_n)
 
         mx2 =
             toString (get_x to_n)
@@ -199,13 +238,21 @@ viewEdge all_nodes t edge =
         line [ x1 mx1, y1 my1, x2 mx2, y2 my2, stroke "#0000aa" ] []
 
 
+incidentOf: Maybe EdgePort -> Vec3
+incidentOf some_port =
+  case some_port of
+    Just p ->
+      p.incident
+    Nothing ->
+      Math.Vector3.vec3 0.0 0.0 0.0
+
 viewNode t n =
     let
         xpos =
-            getX (Math.Matrix4.transform t (toVec3 n.view.pos))
+            getX (Math.Matrix4.transform t (toVec3 (Just n.view.pos)))
 
         ypos =
-            getY (Math.Matrix4.transform t (toVec3 n.view.pos))
+            getY (Math.Matrix4.transform t (toVec3 (Just n.view.pos)))
 
         radius =
             toString n.view.r
@@ -215,16 +262,19 @@ viewNode t n =
         Svg.text_ [x (toString (xpos - toFloat n.view.r + 2.0)), y (toString ypos)] [Svg.text n.name]
       ]
 
-
+toVec3: Maybe Point -> Vec3
 toVec3 pos =
-    Math.Vector3.vec3 (toFloat pos.x) (toFloat pos.y) (toFloat pos.z)
+  case pos of
+    Just p ->
+      Math.Vector3.vec3 (toFloat p.x) (toFloat p.y) (toFloat p.z)
+    Nothing ->
+      Math.Vector3.vec3 0.0 0.0 0.0
 
 getPosition: Model -> Float
 getPosition m =
   case m.drag of
     Nothing ->
       0.0
-
     Just {start,current} ->
       (toFloat (current.x - start.x) * 0.01)
 

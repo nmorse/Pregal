@@ -11188,11 +11188,17 @@ var _user$project$Main$getPosition = function (m) {
 	}
 };
 var _user$project$Main$toVec3 = function (pos) {
-	return A3(
-		_elm_community$linear_algebra$Math_Vector3$vec3,
-		_elm_lang$core$Basics$toFloat(pos.x),
-		_elm_lang$core$Basics$toFloat(pos.y),
-		_elm_lang$core$Basics$toFloat(pos.z));
+	var _p1 = pos;
+	if (_p1.ctor === 'Just') {
+		var _p2 = _p1._0;
+		return A3(
+			_elm_community$linear_algebra$Math_Vector3$vec3,
+			_elm_lang$core$Basics$toFloat(_p2.x),
+			_elm_lang$core$Basics$toFloat(_p2.y),
+			_elm_lang$core$Basics$toFloat(_p2.z));
+	} else {
+		return A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0);
+	}
 };
 var _user$project$Main$viewNode = F2(
 	function (t, n) {
@@ -11201,12 +11207,14 @@ var _user$project$Main$viewNode = F2(
 			A2(
 				_elm_community$linear_algebra$Math_Matrix4$transform,
 				t,
-				_user$project$Main$toVec3(n.view.pos)));
+				_user$project$Main$toVec3(
+					_elm_lang$core$Maybe$Just(n.view.pos))));
 		var xpos = _elm_community$linear_algebra$Math_Vector3$getX(
 			A2(
 				_elm_community$linear_algebra$Math_Matrix4$transform,
 				t,
-				_user$project$Main$toVec3(n.view.pos)));
+				_user$project$Main$toVec3(
+					_elm_lang$core$Maybe$Just(n.view.pos))));
 		return A2(
 			_elm_lang$svg$Svg$g,
 			{ctor: '[]'},
@@ -11259,30 +11267,76 @@ var _user$project$Main$viewNode = F2(
 				}
 			});
 	});
+var _user$project$Main$incidentOf = function (some_port) {
+	var _p3 = some_port;
+	if (_p3.ctor === 'Just') {
+		return _p3._0.incident;
+	} else {
+		return A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0);
+	}
+};
 var _user$project$Main$viewEdge = F3(
 	function (all_nodes, t, edge) {
 		var get_y = function (n) {
-			var _p1 = n;
-			if (_p1.ctor === 'Just') {
+			var _p4 = n;
+			if (_p4.ctor === 'Just') {
 				return _elm_lang$core$Basics$round(
 					_elm_community$linear_algebra$Math_Vector3$getY(
 						A2(
 							_elm_community$linear_algebra$Math_Matrix4$transform,
 							t,
-							_user$project$Main$toVec3(_p1._0.view.pos))));
+							_user$project$Main$toVec3(
+								_elm_lang$core$Maybe$Just(_p4._0.view.pos)))));
+			} else {
+				return 20;
+			}
+		};
+		var get_incident_y = function (n) {
+			var _p5 = n;
+			if (_p5.ctor === 'Just') {
+				return _elm_lang$core$Basics$round(
+					_elm_community$linear_algebra$Math_Vector3$getY(
+						A2(
+							_elm_community$linear_algebra$Math_Matrix4$transform,
+							t,
+							A2(
+								_elm_community$linear_algebra$Math_Vector3$add,
+								_user$project$Main$toVec3(
+									_elm_lang$core$Maybe$Just(_p5._0.view.pos)),
+								_user$project$Main$incidentOf(
+									_elm_lang$core$List$head(edge.view.ports))))));
 			} else {
 				return 20;
 			}
 		};
 		var get_x = function (n) {
-			var _p2 = n;
-			if (_p2.ctor === 'Just') {
+			var _p6 = n;
+			if (_p6.ctor === 'Just') {
 				return _elm_lang$core$Basics$round(
 					_elm_community$linear_algebra$Math_Vector3$getX(
 						A2(
 							_elm_community$linear_algebra$Math_Matrix4$transform,
 							t,
-							_user$project$Main$toVec3(_p2._0.view.pos))));
+							_user$project$Main$toVec3(
+								_elm_lang$core$Maybe$Just(_p6._0.view.pos)))));
+			} else {
+				return 20;
+			}
+		};
+		var get_incident_x = function (n) {
+			var _p7 = n;
+			if (_p7.ctor === 'Just') {
+				return _elm_lang$core$Basics$round(
+					_elm_community$linear_algebra$Math_Vector3$getX(
+						A2(
+							_elm_community$linear_algebra$Math_Matrix4$transform,
+							t,
+							A2(
+								_elm_community$linear_algebra$Math_Vector3$add,
+								_user$project$Main$toVec3(
+									_elm_lang$core$Maybe$Just(_p7._0.view.pos)),
+								_user$project$Main$incidentOf(
+									_elm_lang$core$List$head(edge.view.ports))))));
 			} else {
 				return 20;
 			}
@@ -11306,9 +11360,9 @@ var _user$project$Main$viewEdge = F3(
 				},
 				all_nodes));
 		var mx1 = _elm_lang$core$Basics$toString(
-			get_x(from_n));
+			get_incident_x(from_n));
 		var my1 = _elm_lang$core$Basics$toString(
-			get_y(from_n));
+			get_incident_y(from_n));
 		return A2(
 			_elm_lang$svg$Svg$line,
 			{
@@ -11383,18 +11437,78 @@ var _user$project$Main$init = {
 				}
 			}
 		},
-		e: {
+		ed: {
 			ctor: '::',
-			_0: {from: 1, to: 2, name: 'connect'},
+			_0: {
+				from: 1,
+				to: 2,
+				name: 'connect',
+				view: {
+					ports: {
+						ctor: '::',
+						_0: {
+							incident: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 25.0, 0.0, 0.0),
+							transmitted: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0),
+							pos: {x: 0, y: 0, z: 0}
+						},
+						_1: {ctor: '[]'}
+					}
+				}
+			},
 			_1: {
 				ctor: '::',
-				_0: {from: 1, to: 3, name: 'click'},
+				_0: {
+					from: 1,
+					to: 3,
+					name: 'click',
+					view: {
+						ports: {
+							ctor: '::',
+							_0: {
+								incident: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 15.0, 20.0, 0.0),
+								transmitted: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0),
+								pos: {x: 0, y: 0, z: 0}
+							},
+							_1: {ctor: '[]'}
+						}
+					}
+				},
 				_1: {
 					ctor: '::',
-					_0: {from: 2, to: 3, name: 'clack'},
+					_0: {
+						from: 2,
+						to: 3,
+						name: 'clack',
+						view: {
+							ports: {
+								ctor: '::',
+								_0: {
+									incident: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 15.0, 12.0, 0.0),
+									transmitted: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0),
+									pos: {x: 0, y: 0, z: 0}
+								},
+								_1: {ctor: '[]'}
+							}
+						}
+					},
 					_1: {
 						ctor: '::',
-						_0: {from: 1, to: 4, name: 'cluck'},
+						_0: {
+							from: 1,
+							to: 4,
+							name: 'cluck',
+							view: {
+								ports: {
+									ctor: '::',
+									_0: {
+										incident: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 20.0, 15.0, 0.0),
+										transmitted: A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0),
+										pos: {x: 0, y: 0, z: 0}
+									},
+									_1: {ctor: '[]'}
+								}
+							}
+						},
 						_1: {ctor: '[]'}
 					}
 				}
@@ -11418,13 +11532,20 @@ var _user$project$Main$NodeView = F2(
 	function (a, b) {
 		return {pos: a, r: b};
 	});
+var _user$project$Main$EdgeView = function (a) {
+	return {ports: a};
+};
+var _user$project$Main$EdgePort = F3(
+	function (a, b, c) {
+		return {incident: a, transmitted: b, pos: c};
+	});
 var _user$project$Main$Node = F3(
 	function (a, b, c) {
 		return {id: a, name: b, view: c};
 	});
-var _user$project$Main$Edge = F3(
-	function (a, b, c) {
-		return {from: a, to: b, name: c};
+var _user$project$Main$Edge = F4(
+	function (a, b, c, d) {
+		return {from: a, to: b, name: c, view: d};
 	});
 var _user$project$Main$Drag = F2(
 	function (a, b) {
@@ -11432,18 +11553,18 @@ var _user$project$Main$Drag = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p3 = msg;
-		switch (_p3.ctor) {
+		var _p8 = msg;
+		switch (_p8.ctor) {
 			case 'Tick':
-				var _p4 = _p3._0;
+				var _p9 = _p8._0;
 				return model.animate_start ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							rot: model.rot + _elm_lang$core$Time$inSeconds(model.ct - model.st),
-							st: _p4,
-							ct: _p4,
+							st: _p9,
+							ct: _p9,
 							animate_start: false
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -11451,7 +11572,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{ct: _p4}),
+						{ct: _p9}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'StopAndGo':
@@ -11469,14 +11590,14 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'DragStart':
-				var _p5 = _p3._0;
+				var _p10 = _p8._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							drag: model.animate_on ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
-								A2(_user$project$Main$Drag, _p5, _p5))
+								A2(_user$project$Main$Drag, _p10, _p10))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -11489,9 +11610,9 @@ var _user$project$Main$update = F2(
 							rot_drag: _user$project$Main$getPosition(model),
 							drag: A2(
 								_elm_lang$core$Maybe$map,
-								function (_p6) {
-									var _p7 = _p6;
-									return A2(_user$project$Main$Drag, _p7.start, _p3._0);
+								function (_p11) {
+									var _p12 = _p11;
+									return A2(_user$project$Main$Drag, _p12.start, _p8._0);
 								},
 								model.drag)
 						}),
@@ -11509,7 +11630,7 @@ var _user$project$Main$update = F2(
 	});
 var _user$project$Main$Model = F9(
 	function (a, b, c, d, e, f, g, h, i) {
-		return {drag: a, animate_on: b, animate_start: c, ct: d, st: e, n: f, e: g, rot: h, rot_drag: i};
+		return {drag: a, animate_on: b, animate_start: c, ct: d, st: e, n: f, ed: g, rot: h, rot_drag: i};
 	});
 var _user$project$Main$DragEnd = function (a) {
 	return {ctor: 'DragEnd', _0: a};
@@ -11579,7 +11700,7 @@ var _user$project$Main$view = function (model) {
 						A2(
 							_elm_lang$core$List$map,
 							A2(_user$project$Main$viewEdge, model.n, rot_trans),
-							model.e),
+							model.ed),
 						A2(
 							_elm_lang$core$List$map,
 							_user$project$Main$viewNode(rot_trans),
@@ -11623,8 +11744,8 @@ var _user$project$Main$subscriptions = function (model) {
 	if (model.animate_on) {
 		return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 0.1, _user$project$Main$Tick);
 	} else {
-		var _p8 = model.drag;
-		if (_p8.ctor === 'Nothing') {
+		var _p13 = model.drag;
+		if (_p13.ctor === 'Nothing') {
 			return _elm_lang$core$Platform_Sub$none;
 		} else {
 			return _elm_lang$core$Platform_Sub$batch(
