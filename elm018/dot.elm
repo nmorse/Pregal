@@ -162,7 +162,7 @@ view model =
         svg [ viewBox "0 0 500 300", Svg.Attributes.width "500px" ]
             (List.append
                 (List.map (viewEdge model.n rot_trans) model.ed)
-                (List.map (viewNode rot_trans) (qsortz model.n))
+                (List.map (viewNode rot_trans) (qsortz rot_trans model.n))
             ),
         div [onMouseDown, Html.Attributes.style [("width", "100%"), ("height", "30px"), ("background-color", "#CCCCEE")]] []
       ]
@@ -282,22 +282,22 @@ getPosition m =
 onMouseDown : Html.Attribute Msg
 onMouseDown =
   on "mousedown" (Decode.map DragStart Mouse.position)
-  
-
-sortBy: Node -> Int
-sortBy node = 
-  node.view.pos.z
 
 
-qsortz: List Node -> List Node
-qsortz list = 
+sortBy: Mat4 -> Node -> Float
+sortBy t node =
+  getZ (Math.Matrix4.transform t (toVec3 (Just node.view.pos)))
+
+
+qsortz: Mat4 -> List Node -> List Node
+qsortz  rot_trans list =
   case list of
     [] ->
         []
 
     pivot :: rest ->
         let
-          lower  = List.filter (\n -> sortBy n <= sortBy pivot) rest
-          higher = List.filter (\n -> sortBy n >  sortBy pivot) rest
+          lower  = List.filter (\n -> sortBy rot_trans n <= sortBy rot_trans pivot) rest
+          higher = List.filter (\n -> sortBy rot_trans n >  sortBy rot_trans pivot) rest
         in
-          qsortz lower ++ [pivot] ++ qsortz higher
+          qsortz rot_trans lower ++ [pivot] ++ qsortz rot_trans higher
