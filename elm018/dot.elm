@@ -32,7 +32,7 @@ type alias Point =
 --  { x : Float, y : Float, z : Float }
 
 type alias NodeView =
-  { pos : Point, r : Int }
+  { pos : Point, r : Int, color : String }
 
 type alias EdgeView =
   { ports : List EdgePort }
@@ -66,10 +66,10 @@ init : ( Model, Cmd Msg )
 init =
     ( {
       n =
-            [ { id = 1, name = "a is 1", view = { r = 25, pos = { x = -50, y = 100, z = 0 } } }
-            , { id = 2, name = "b is 2", view = { r = 20, pos = { x = 50, y = -100, z = -50 } } }
-            , { id = 3, name = "c is 3", view = { r = 15, pos = { x = 50, y = 100, z = 0 } } }
-            , { id = 4, name = "d", view = { r = 10, pos = { x = -50, y = -100, z = 100 } } }
+            [ { id = 1, name = "a is 1", view = { r = 25, pos = { x = -50, y = 100, z = 0}, color = "#FF0000"  } }
+            , { id = 2, name = "b is 2", view = { r = 20, pos = { x = 50, y = -100, z = -50}, color = "#8F8F00"  } }
+            , { id = 3, name = "c is 3", view = { r = 15, pos = { x = 50, y = 100, z = 0}, color = "#00FF00"  } }
+            , { id = 4, name = "d", view = { r = 10, pos = { x = -50, y = -100, z = 100}, color = "#000FF0"  } }
             ]
       , ed = [ { from = 1, to = 2, name = "connect", view = {ports=[{ incident=(Math.Vector3.vec3 25.0 0.0 0.0), transmitted=(Math.Vector3.vec3 0.0 0.0 0.0), pos={ x = 0, y = 0, z = 0 } }]} }
             , { from = 1, to = 3, name = "click", view = {ports=[{incident=(Math.Vector3.vec3 15.0 20.0 0.0), transmitted=(Math.Vector3.vec3 0.0 0.0 0.0), pos={ x = 0, y = 0, z = 0 } }]} }
@@ -183,7 +183,7 @@ viewEdge all_nodes t edge =
                 Just { id, name, view } ->
                     round (getX (Math.Matrix4.transform t
                       (Math.Vector3.add
-                        (toVec3 (Just view.pos))
+                        (toVec3 view.pos)
                         (incidentOf (List.head edge.view.ports)) )))
 
                 _ ->
@@ -194,7 +194,7 @@ viewEdge all_nodes t edge =
             case n of
                 Just { id, name, view } ->
                     round (getX (Math.Matrix4.transform t
-                      (toVec3 (Just view.pos))
+                      (toVec3 view.pos)
                         ))
 
                 _ ->
@@ -206,7 +206,7 @@ viewEdge all_nodes t edge =
                 Just { id, name, view } ->
                     round (getY (Math.Matrix4.transform t
                       (Math.Vector3.add
-                        (toVec3 (Just view.pos))
+                        (toVec3 view.pos)
                         (incidentOf (List.head edge.view.ports)) )))
 
                 _ ->
@@ -217,7 +217,7 @@ viewEdge all_nodes t edge =
             case n of
                 Just { id, name, view } ->
                     round (getY (Math.Matrix4.transform t
-                        (toVec3 (Just view.pos))
+                        (toVec3 view.pos)
                         ))
 
                 _ ->
@@ -249,26 +249,22 @@ incidentOf some_port =
 viewNode t n =
     let
         xpos =
-            getX (Math.Matrix4.transform t (toVec3 (Just n.view.pos)))
+            getX (Math.Matrix4.transform t (toVec3 n.view.pos))
 
         ypos =
-            getY (Math.Matrix4.transform t (toVec3 (Just n.view.pos)))
+            getY (Math.Matrix4.transform t (toVec3 n.view.pos))
 
         radius =
             toString n.view.r
     in
       Svg.g [] [
-        circle [ cx (toString xpos), cy (toString ypos), r radius, fill "#dd0000" ] [],
+        circle [ cx (toString xpos), cy (toString ypos), r radius, fill n.view.color ] [],
         Svg.text_ [x (toString (xpos - toFloat n.view.r + 2.0)), y (toString ypos)] [Svg.text n.name]
       ]
 
-toVec3: Maybe Point -> Vec3
-toVec3 pos =
-  case pos of
-    Just p ->
+toVec3: Point -> Vec3
+toVec3 p =
       Math.Vector3.vec3 (toFloat p.x) (toFloat p.y) (toFloat p.z)
-    Nothing ->
-      Math.Vector3.vec3 0.0 0.0 0.0
 
 getPosition: Model -> Float
 getPosition m =
@@ -286,7 +282,7 @@ onMouseDown =
 
 sortBy: Mat4 -> Node -> Float
 sortBy t node =
-  getZ (Math.Matrix4.transform t (toVec3 (Just node.view.pos)))
+  getZ (Math.Matrix4.transform t (toVec3 node.view.pos))
 
 
 qsortz: Mat4 -> List Node -> List Node
@@ -297,7 +293,8 @@ qsortz  rot_trans list =
 
     pivot :: rest ->
         let
-          lower  = List.filter (\n -> sortBy rot_trans n <= sortBy rot_trans pivot) rest
-          higher = List.filter (\n -> sortBy rot_trans n >  sortBy rot_trans pivot) rest
+          transformed_pivot = sortBy rot_trans pivot
+          lower  = List.filter (\n -> sortBy rot_trans n >= transformed_pivot) rest
+          higher = List.filter (\n -> sortBy rot_trans n <  transformed_pivot) rest
         in
           qsortz rot_trans lower ++ [pivot] ++ qsortz rot_trans higher

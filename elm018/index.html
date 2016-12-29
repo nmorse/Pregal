@@ -11187,18 +11187,12 @@ var _user$project$Main$getPosition = function (m) {
 		return _elm_lang$core$Basics$toFloat(_p0._0.current.x - _p0._0.start.x) * 1.0e-2;
 	}
 };
-var _user$project$Main$toVec3 = function (pos) {
-	var _p1 = pos;
-	if (_p1.ctor === 'Just') {
-		var _p2 = _p1._0;
-		return A3(
-			_elm_community$linear_algebra$Math_Vector3$vec3,
-			_elm_lang$core$Basics$toFloat(_p2.x),
-			_elm_lang$core$Basics$toFloat(_p2.y),
-			_elm_lang$core$Basics$toFloat(_p2.z));
-	} else {
-		return A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0);
-	}
+var _user$project$Main$toVec3 = function (p) {
+	return A3(
+		_elm_community$linear_algebra$Math_Vector3$vec3,
+		_elm_lang$core$Basics$toFloat(p.x),
+		_elm_lang$core$Basics$toFloat(p.y),
+		_elm_lang$core$Basics$toFloat(p.z));
 };
 var _user$project$Main$sortBy = F2(
 	function (t, node) {
@@ -11206,33 +11200,33 @@ var _user$project$Main$sortBy = F2(
 			A2(
 				_elm_community$linear_algebra$Math_Matrix4$transform,
 				t,
-				_user$project$Main$toVec3(
-					_elm_lang$core$Maybe$Just(node.view.pos))));
+				_user$project$Main$toVec3(node.view.pos)));
 	});
 var _user$project$Main$qsortz = F2(
 	function (rot_trans, list) {
-		var _p3 = list;
-		if (_p3.ctor === '[]') {
+		var _p1 = list;
+		if (_p1.ctor === '[]') {
 			return {ctor: '[]'};
 		} else {
-			var _p5 = _p3._1;
-			var _p4 = _p3._0;
-			var higher = A2(
-				_elm_lang$core$List$filter,
-				function (n) {
-					return _elm_lang$core$Native_Utils.cmp(
-						A2(_user$project$Main$sortBy, rot_trans, n),
-						A2(_user$project$Main$sortBy, rot_trans, _p4)) > 0;
-				},
-				_p5);
+			var _p3 = _p1._1;
+			var _p2 = _p1._0;
+			var transformed_pivot = A2(_user$project$Main$sortBy, rot_trans, _p2);
 			var lower = A2(
 				_elm_lang$core$List$filter,
 				function (n) {
 					return _elm_lang$core$Native_Utils.cmp(
 						A2(_user$project$Main$sortBy, rot_trans, n),
-						A2(_user$project$Main$sortBy, rot_trans, _p4)) < 1;
+						transformed_pivot) > -1;
 				},
-				_p5);
+				_p3);
+			var higher = A2(
+				_elm_lang$core$List$filter,
+				function (n) {
+					return _elm_lang$core$Native_Utils.cmp(
+						A2(_user$project$Main$sortBy, rot_trans, n),
+						transformed_pivot) < 0;
+				},
+				_p3);
 			return A2(
 				_elm_lang$core$Basics_ops['++'],
 				A2(_user$project$Main$qsortz, rot_trans, lower),
@@ -11240,7 +11234,7 @@ var _user$project$Main$qsortz = F2(
 					_elm_lang$core$Basics_ops['++'],
 					{
 						ctor: '::',
-						_0: _p4,
+						_0: _p2,
 						_1: {ctor: '[]'}
 					},
 					A2(_user$project$Main$qsortz, rot_trans, higher)));
@@ -11253,14 +11247,12 @@ var _user$project$Main$viewNode = F2(
 			A2(
 				_elm_community$linear_algebra$Math_Matrix4$transform,
 				t,
-				_user$project$Main$toVec3(
-					_elm_lang$core$Maybe$Just(n.view.pos))));
+				_user$project$Main$toVec3(n.view.pos)));
 		var xpos = _elm_community$linear_algebra$Math_Vector3$getX(
 			A2(
 				_elm_community$linear_algebra$Math_Matrix4$transform,
 				t,
-				_user$project$Main$toVec3(
-					_elm_lang$core$Maybe$Just(n.view.pos))));
+				_user$project$Main$toVec3(n.view.pos)));
 		return A2(
 			_elm_lang$svg$Svg$g,
 			{ctor: '[]'},
@@ -11281,7 +11273,7 @@ var _user$project$Main$viewNode = F2(
 								_0: _elm_lang$svg$Svg_Attributes$r(radius),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$fill('#dd0000'),
+									_0: _elm_lang$svg$Svg_Attributes$fill(n.view.color),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -11314,9 +11306,9 @@ var _user$project$Main$viewNode = F2(
 			});
 	});
 var _user$project$Main$incidentOf = function (some_port) {
-	var _p6 = some_port;
-	if (_p6.ctor === 'Just') {
-		return _p6._0.incident;
+	var _p4 = some_port;
+	if (_p4.ctor === 'Just') {
+		return _p4._0.incident;
 	} else {
 		return A3(_elm_community$linear_algebra$Math_Vector3$vec3, 0.0, 0.0, 0.0);
 	}
@@ -11324,22 +11316,21 @@ var _user$project$Main$incidentOf = function (some_port) {
 var _user$project$Main$viewEdge = F3(
 	function (all_nodes, t, edge) {
 		var get_y = function (n) {
-			var _p7 = n;
-			if (_p7.ctor === 'Just') {
+			var _p5 = n;
+			if (_p5.ctor === 'Just') {
 				return _elm_lang$core$Basics$round(
 					_elm_community$linear_algebra$Math_Vector3$getY(
 						A2(
 							_elm_community$linear_algebra$Math_Matrix4$transform,
 							t,
-							_user$project$Main$toVec3(
-								_elm_lang$core$Maybe$Just(_p7._0.view.pos)))));
+							_user$project$Main$toVec3(_p5._0.view.pos))));
 			} else {
 				return 20;
 			}
 		};
 		var get_incident_y = function (n) {
-			var _p8 = n;
-			if (_p8.ctor === 'Just') {
+			var _p6 = n;
+			if (_p6.ctor === 'Just') {
 				return _elm_lang$core$Basics$round(
 					_elm_community$linear_algebra$Math_Vector3$getY(
 						A2(
@@ -11347,8 +11338,7 @@ var _user$project$Main$viewEdge = F3(
 							t,
 							A2(
 								_elm_community$linear_algebra$Math_Vector3$add,
-								_user$project$Main$toVec3(
-									_elm_lang$core$Maybe$Just(_p8._0.view.pos)),
+								_user$project$Main$toVec3(_p6._0.view.pos),
 								_user$project$Main$incidentOf(
 									_elm_lang$core$List$head(edge.view.ports))))));
 			} else {
@@ -11356,22 +11346,21 @@ var _user$project$Main$viewEdge = F3(
 			}
 		};
 		var get_x = function (n) {
-			var _p9 = n;
-			if (_p9.ctor === 'Just') {
+			var _p7 = n;
+			if (_p7.ctor === 'Just') {
 				return _elm_lang$core$Basics$round(
 					_elm_community$linear_algebra$Math_Vector3$getX(
 						A2(
 							_elm_community$linear_algebra$Math_Matrix4$transform,
 							t,
-							_user$project$Main$toVec3(
-								_elm_lang$core$Maybe$Just(_p9._0.view.pos)))));
+							_user$project$Main$toVec3(_p7._0.view.pos))));
 			} else {
 				return 20;
 			}
 		};
 		var get_incident_x = function (n) {
-			var _p10 = n;
-			if (_p10.ctor === 'Just') {
+			var _p8 = n;
+			if (_p8.ctor === 'Just') {
 				return _elm_lang$core$Basics$round(
 					_elm_community$linear_algebra$Math_Vector3$getX(
 						A2(
@@ -11379,8 +11368,7 @@ var _user$project$Main$viewEdge = F3(
 							t,
 							A2(
 								_elm_community$linear_algebra$Math_Vector3$add,
-								_user$project$Main$toVec3(
-									_elm_lang$core$Maybe$Just(_p10._0.view.pos)),
+								_user$project$Main$toVec3(_p8._0.view.pos),
 								_user$project$Main$incidentOf(
 									_elm_lang$core$List$head(edge.view.ports))))));
 			} else {
@@ -11445,7 +11433,8 @@ var _user$project$Main$init = {
 				name: 'a is 1',
 				view: {
 					r: 25,
-					pos: {x: -50, y: 100, z: 0}
+					pos: {x: -50, y: 100, z: 0},
+					color: '#FF0000'
 				}
 			},
 			_1: {
@@ -11455,7 +11444,8 @@ var _user$project$Main$init = {
 					name: 'b is 2',
 					view: {
 						r: 20,
-						pos: {x: 50, y: -100, z: -50}
+						pos: {x: 50, y: -100, z: -50},
+						color: '#8F8F00'
 					}
 				},
 				_1: {
@@ -11465,7 +11455,8 @@ var _user$project$Main$init = {
 						name: 'c is 3',
 						view: {
 							r: 15,
-							pos: {x: 50, y: 100, z: 0}
+							pos: {x: 50, y: 100, z: 0},
+							color: '#00FF00'
 						}
 					},
 					_1: {
@@ -11475,7 +11466,8 @@ var _user$project$Main$init = {
 							name: 'd',
 							view: {
 								r: 10,
-								pos: {x: -50, y: -100, z: 100}
+								pos: {x: -50, y: -100, z: 100},
+								color: '#000FF0'
 							}
 						},
 						_1: {ctor: '[]'}
@@ -11574,9 +11566,9 @@ var _user$project$Main$Point = F3(
 	function (a, b, c) {
 		return {x: a, y: b, z: c};
 	});
-var _user$project$Main$NodeView = F2(
-	function (a, b) {
-		return {pos: a, r: b};
+var _user$project$Main$NodeView = F3(
+	function (a, b, c) {
+		return {pos: a, r: b, color: c};
 	});
 var _user$project$Main$EdgeView = function (a) {
 	return {ports: a};
@@ -11599,18 +11591,18 @@ var _user$project$Main$Drag = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p11 = msg;
-		switch (_p11.ctor) {
+		var _p9 = msg;
+		switch (_p9.ctor) {
 			case 'Tick':
-				var _p12 = _p11._0;
+				var _p10 = _p9._0;
 				return model.animate_start ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							rot: model.rot + _elm_lang$core$Time$inSeconds(model.ct - model.st),
-							st: _p12,
-							ct: _p12,
+							st: _p10,
+							ct: _p10,
 							animate_start: false
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -11618,7 +11610,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{ct: _p12}),
+						{ct: _p10}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'StopAndGo':
@@ -11636,14 +11628,14 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'DragStart':
-				var _p13 = _p11._0;
+				var _p11 = _p9._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							drag: model.animate_on ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
-								A2(_user$project$Main$Drag, _p13, _p13))
+								A2(_user$project$Main$Drag, _p11, _p11))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -11656,9 +11648,9 @@ var _user$project$Main$update = F2(
 							rot_drag: _user$project$Main$getPosition(model),
 							drag: A2(
 								_elm_lang$core$Maybe$map,
-								function (_p14) {
-									var _p15 = _p14;
-									return A2(_user$project$Main$Drag, _p15.start, _p11._0);
+								function (_p12) {
+									var _p13 = _p12;
+									return A2(_user$project$Main$Drag, _p13.start, _p9._0);
 								},
 								model.drag)
 						}),
@@ -11790,8 +11782,8 @@ var _user$project$Main$subscriptions = function (model) {
 	if (model.animate_on) {
 		return A2(_elm_lang$core$Time$every, _elm_lang$core$Time$second * 0.1, _user$project$Main$Tick);
 	} else {
-		var _p16 = model.drag;
-		if (_p16.ctor === 'Nothing') {
+		var _p14 = model.drag;
+		if (_p14.ctor === 'Nothing') {
 			return _elm_lang$core$Platform_Sub$none;
 		} else {
 			return _elm_lang$core$Platform_Sub$batch(
