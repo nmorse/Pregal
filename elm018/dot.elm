@@ -249,17 +249,26 @@ incidentOf some_port =
 viewNode t n =
     let
         xpos =
-            getX (Math.Matrix4.transform t (toVec3 n.view.pos))
+            getX (Math.Matrix4.transform t (toVec3 n.view.pos)) - 2.0 * toFloat n.view.r
 
         ypos =
-            getY (Math.Matrix4.transform t (toVec3 n.view.pos))
+            getY (Math.Matrix4.transform t (toVec3 n.view.pos)) - toFloat n.view.r
+
+        w =
+          toString (n.view.r * 3)
+
+        h =
+          toString (n.view.r * 2)
 
         radius =
             toString n.view.r
+
+        toS n =
+          toString n
     in
       Svg.g [] [
-        circle [ cx (toString xpos), cy (toString ypos), r radius, fill n.view.color ] [],
-        Svg.text_ [x (toString (xpos - toFloat n.view.r + 2.0)), y (toString ypos)] [Svg.text n.name]
+        rect [ x (toS xpos), y (toS ypos), Svg.Attributes.width w, Svg.Attributes.height h, fill n.view.color ] [],
+        Svg.text_ [x (toS (xpos + 4)), y (toS (ypos + toFloat n.view.r + 3))] [Svg.text n.name]
       ]
 
 toVec3: Point -> Vec3

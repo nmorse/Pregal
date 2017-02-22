@@ -11242,39 +11242,48 @@ var _user$project$Main$qsortz = F2(
 	});
 var _user$project$Main$viewNode = F2(
 	function (t, n) {
+		var toS = function (n) {
+			return _elm_lang$core$Basics$toString(n);
+		};
 		var radius = _elm_lang$core$Basics$toString(n.view.r);
+		var h = _elm_lang$core$Basics$toString(n.view.r * 2);
+		var w = _elm_lang$core$Basics$toString(n.view.r * 3);
 		var ypos = _elm_community$linear_algebra$Math_Vector3$getY(
 			A2(
 				_elm_community$linear_algebra$Math_Matrix4$transform,
 				t,
-				_user$project$Main$toVec3(n.view.pos)));
+				_user$project$Main$toVec3(n.view.pos))) - _elm_lang$core$Basics$toFloat(n.view.r);
 		var xpos = _elm_community$linear_algebra$Math_Vector3$getX(
 			A2(
 				_elm_community$linear_algebra$Math_Matrix4$transform,
 				t,
-				_user$project$Main$toVec3(n.view.pos)));
+				_user$project$Main$toVec3(n.view.pos))) - (2.0 * _elm_lang$core$Basics$toFloat(n.view.r));
 		return A2(
 			_elm_lang$svg$Svg$g,
 			{ctor: '[]'},
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$svg$Svg$circle,
+					_elm_lang$svg$Svg$rect,
 					{
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$cx(
-							_elm_lang$core$Basics$toString(xpos)),
+						_0: _elm_lang$svg$Svg_Attributes$x(
+							toS(xpos)),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$cy(
-								_elm_lang$core$Basics$toString(ypos)),
+							_0: _elm_lang$svg$Svg_Attributes$y(
+								toS(ypos)),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$r(radius),
+								_0: _elm_lang$svg$Svg_Attributes$width(w),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$fill(n.view.color),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$svg$Svg_Attributes$height(h),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$fill(n.view.color),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
@@ -11287,12 +11296,12 @@ var _user$project$Main$viewNode = F2(
 						{
 							ctor: '::',
 							_0: _elm_lang$svg$Svg_Attributes$x(
-								_elm_lang$core$Basics$toString(
-									(xpos - _elm_lang$core$Basics$toFloat(n.view.r)) + 2.0)),
+								toS(xpos + 4)),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$svg$Svg_Attributes$y(
-									_elm_lang$core$Basics$toString(ypos)),
+									toS(
+										(ypos + _elm_lang$core$Basics$toFloat(n.view.r)) + 3)),
 								_1: {ctor: '[]'}
 							}
 						},
